@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>Nutrition App</title>
+  <link href="style.css" rel="stylesheet" type="text/css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+    rel="stylesheet">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Reddit+Mono:wght@200..900&display=swap" rel="stylesheet">
+
+
+
+
+  <link rel="icon" type="image/x-icon" href="pics/IMG_7779 (1).jpg">
+</head>
+
+<body>
+
+  <div class="banner">
+    <div class="overlay"></div>
+    <div class="nav">
+      <ul>
+        <li> <a href="./index.html" class="active">Home</a> </li>
+        <li> <a href="./AboutUs.html" class="active">About Us</a> </li>
+        <li> <a href="./mission.html" class="active">Mission</a> </li>
+      </ul>
+      <h1>Nutrition Legends</h1>
+    </div>
+  </div>
+
+
+  <div class="searchMain">
+    <div class="description">
+      <p> Enter a food to learn about the total calories and nutrients that your body has received during the day. </p>
+    </div>
+
+    <div class="entireSearch">
+      <form id="searchForm" name="searchForm">
+        <div id="searchQuestion">
+          <label id="searchLabel" for="searchBar"> </label>
+          <input name="searchBar" type="text" id="searchInput" placeholder="Search for a food">
+          <input type="image" value="Search" id="searchFood" src="pics/searchIcon.jpg">
+        </div>
+
+
+      </form>
+    </div>
+  </div>
+
+
+  <div id="responses">
+    <h4 id="calCountText" style="display: none;">Total Calorie Count: <span id="totalCalories">0</span>
+    </h4>
+
+
+    <div id="results"></div>
+  </div>
+
+  <div class="calorieIntake">
+
+    <h4>Healthy Calorie Intake</h4>
+
+    <p>Although it differs for everyone based on their age and activity level, experts recommend that women <a
+        href="https://www.webmd.com/diet/calories-chart">should have about 1600 to 2400 calories each day</a>, and men<a href="https://www.webmd.com/diet/calories-chart"> should have about 2000 to 3000</a>.</p>
+
+  </div>
+
+
+
+
+  <div class="quote">
+    <div class="vLine">
+      <p style="font-style: italic;"> "Your body is a temple, but only if you treat it as one" </p>
+      <p> - Astrid Alauda </p>
+    </div>
+  </div>
+
+  <div class="importance">
+
+    <h4>The importance of watching what you eat...</h4>
+    <p>Tracking and managing calorie intake is crucial for maintaining overall health and wellness. It supports weight
+      management, whether the goal is to lose, gain, or maintain weight, and promotes healthier eating habits through
+      increased nutritional awareness. Proper calorie monitoring helps prevent chronic diseases such as obesity, type 2
+      diabetes, and cardiovascular issues while ensuring balanced energy levels for better physical performance and
+      mental clarity. Additionally, managing calories aids in portion control, supports metabolic health, and
+      contributes to longevity. Utilizing tools, reading labels, planning meals, staying informed, and seeking
+      professional advice are practical ways to effectively watch calorie intake. </p>
+
+  </div>
+
+  <br><br>
+
+  <footer>
+    <div class="contactUs">
+      <hr>
+      <h2> Contact Us</h2>
+      <div class="social-icons">
+        <a href="https://x.com/NutriLegends" target="_blank" rel="noopener noreferrer">
+          <img src="pics/twitter_icon.png" alt="Twitter">
+        </a>
+        <a href="https://www.instagram.com/nutritionlegends/" target="_blank" rel="noopener noreferrer">
+          <img src="pics/instagram-icon-trans.png" alt="Instagram">
+        </a>
+
+        <p id="email"><strong>E-MAIL:</strong>
+          <a
+            href="https://mail.google.com/mail/u/0/#inbox?compose=DmwnWrRvxdwPKsqWxHCJjsCHWXwhrGfgZMghcNPwWTVjLDdtBWZzrrksPwbShBnHDwKJJKgvpQgB">nutritionlegends@gmail.com</a>
+        </p>
+        <!-- Add more social media icons as needed -->
+      </div>
+    </div>
+  </footer>
+  <script>
+
+    const apiKey = 'WoC7Swbh0AMAkokTMcXurg==sM9rM0EWMoE2Bn5M'; // Your CalorieNinjas API key
+    let totalCalories = 0; // Initialize total calories
+
+    document.getElementById('searchForm').addEventListener('submit', function (event) {
+      event.preventDefault(); // Prevents form from submitting the traditional way
+
+      const query = document.getElementById('searchInput').value;
+      if (query.trim() !== "") {
+        fetchNutritionalInfo(query);
+      }
+    });
+
+    async function fetchNutritionalInfo(query) {
+      const endpoint = `https://api.calorieninjas.com/v1/nutrition?query=${encodeURIComponent(query)}`;
+
+      try {
+        const response = await fetch(endpoint, {
+          headers: {
+            'X-Api-Key': apiKey // Include your API key in the request headers
+          }
+        });
+        const data = await response.json();
+
+        displayResults(data);
+      } catch (error) {
+        console.error('Error fetching nutritional information:', error);
+        document.getElementById('results').innerHTML = 'Error fetching results.';
+      }
+    }
+
+    function displayResults(data) {
+      const resultsContainer = document.getElementById('results');
+      resultsContainer.innerHTML = ''; // Clear previous results
+
+      if (data.items && data.items.length > 0) {
+        let caloriesForSearch = 0; // Initialize calories for this search
+        data.items.forEach(item => {
+          const resultDiv = document.createElement('div');
+          resultDiv.classList.add('result');
+          resultDiv.innerHTML = `
+            <h4>${item.name}</h4>
+            <p>Calories: ${item.calories}</p>
+          `;
+          resultsContainer.appendChild(resultDiv);
+          caloriesForSearch += item.calories; // Add item's calories to this search's total
+        });
+
+        totalCalories += caloriesForSearch; // Add this search's calories to the total
+        document.getElementById('totalCalories').textContent = totalCalories.toFixed(2); // Update the total calories text
+        document.getElementById('calCountText').style.display = 'block'; // Show total calories text
+      } else {
+        resultsContainer.innerHTML = 'No nutritional information found.';
+      }
+    }
+  </script>
+
+
+
+</body>
+
+</html>
